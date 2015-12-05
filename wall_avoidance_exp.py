@@ -46,18 +46,22 @@ vir_reader = graphics.WavefrontReader(os.path.join('obj', 'VR_WallAvoidance.obj'
 vir_arena = vir_reader.get_mesh('Arena')
 vir_arena.load_texture(graphics.resources.img_uvgrid)
 vir_arena.material.spec_weight = 0.
+vir_arena.material.diffuse.rgb = .3, .3, .3
 
 walls = []
 for wall_idx in '12':
     wall = vir_reader.get_mesh(metadata['Wall Length'+wall_idx] + 'Wall' + metadata['Wall Num'+wall_idx])
     wall.load_texture(graphics.resources.img_uvgrid)
     wall.visible = False
+    wall.material.diffuse.rgb = 1., 1., 1.
     wall.material.spec_weight = 0.
+    wall.local.y -= .01 
     walls.append(wall)
+
 
 # Note: Build Scenes (1st half, 2nd half) and window
 active_scene = graphics.Scene([arena], camera=graphics.projector, light=graphics.projector, bgColor=(0., 0., .2, 1.))
-vir_scene = graphics.Scene(walls, light=graphics.projector, bgColor=(0., .2, 0., 1.))
+vir_scene = graphics.Scene(walls+[vir_arena], light=graphics.projector, bgColor=(0., .2, 0., 1.))
 
 window = graphics.Window(active_scene, fullscr=True, screen=1, texture_size=metadata['Texture Size'])
 window.virtual_scene = vir_scene
@@ -70,7 +74,7 @@ tracker.wait_for_recording_start(debug_mode=metadata['Rat'] == 'Test')
 
 # Note: Don't start recording/timing until rat has been placed in the arena.
 print("Waiting for rat to enter trackable area before beginning the simulation...")
-while not rat_rb.seen or metadata['Rat'] == 'Test':
+while not rat_rb.seen and metadata['Rat'] != 'Test':
     pass
 print("...Rat Detected!")
 
@@ -101,6 +105,7 @@ with graphics.Logger(scenes=[active_scene, vir_scene], exp_name=metadata['Experi
                 break
         else:
             wall.visible = False
+            continue
         break
 
 # Note: Clean-Up Section
