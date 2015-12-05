@@ -52,6 +52,7 @@ for wall_idx in '12':
     wall = vir_reader.get_mesh(metadata['Wall Length'+wall_idx] + 'Wall' + metadata['Wall Num'+wall_idx])
     wall.load_texture(graphics.resources.img_uvgrid)
     wall.visible = False
+    wall.material.spec_weight = 0.
     walls.append(wall)
 
 # Note: Build Scenes (1st half, 2nd half) and window
